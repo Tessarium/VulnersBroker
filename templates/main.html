@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vulners-Agent</title>
+    {% load static %}
+    <link rel="stylesheet" href = "{% static 'css/note.css' %}">
+    <link rel="stylesheet" href = "{% static 'css/result-block.css' %}">
+    <link rel="stylesheet" href = "{% static 'css/search-block.css' %}">
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.js"
+            integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+            crossorigin="anonymous">
+    </script>
+    <style>
+        body {
+            position: relative;
+            background: url({% static '/images/b1.png' %}) no-repeat center center fixed;
+            background-size: cover;
+            min-width: 1150px;
+            min-height: 620px;
+            max-height: 100%;
+            max-width: 100%;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <form method="POST" action="" id="search" class="form-wrapper cf">
+        <input class="searchfield" id="searchbox" name="q" type="text" value="{{ request.GET.q }}"
+               placeholder="Search"/>
+        <button type="submit">GO</button>
+        <div class="note">
+            Помощь, примеры команд <br>
+            <div class="descr">
+                <strong>Список команд и параметров к ним:</strong><br>
+                'main':         -<br>
+                'search':       query<br>
+                'software':     software, version, type<br>
+                'id':           id<br>
+                'suggest':      type, fieldName<br>
+                'ai':           text<br>
+                'archive':      type<br>
+                'apikey':       keyID<br>
+                'audit':        os, version, package<br>
+                'rules':        -<br>
+                'autocomplete': query<br>
+                <strong>Примечание</strong> - символ ";" является разделителем,<br>
+                ";;" - пустой параметр<br>
+                <strong>Примеры команд:</strong><br>
+                main;<br>
+                search;Ubuntu;<br>
+                id;PACKETSTORM:150239<br>
+                audit;Ubuntu;;<br>
+            </div>
+        </div>
+    </form>
+
+    <div class="result-block">
+        <pre class="text-field" id="json-field">
+
+        </pre>
+    </div>
+</body>
+    <script type="text/javascript">
+    $('form.form-wrapper').on('submit', function (e) {
+        e.preventDefault();
+
+        var val = $(this).find('[name=q]').val();
+
+        $.ajax({
+            type: 'POST',
+            url: window.location.href,
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'command': val,
+            },
+            success: function (data) {
+                $('#json-field').text(JSON.stringify(data, null, 2));
+            },
+            error: function (data) {
+                console.log('error');
+                console.log(data)
+            }
+        });
+    });
+</script>
+</html>
